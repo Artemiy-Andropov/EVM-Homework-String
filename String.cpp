@@ -1,5 +1,6 @@
 #include <iostream>
 #include "String.h"
+#include "Exception.h"
 
 String::String()
 {
@@ -7,7 +8,7 @@ String::String()
 	m_size = 0;
 }
 
-String::String(char* string_, int size)
+String::String(const char* string_, int size)
 {
 	if (size <= 0)
 	{
@@ -62,17 +63,10 @@ int String::Lenght()
 
 char& String::At(int position)
 {
-	try
-	{
-		if (position >= m_size || position < 0)
-			throw 1;
+	if (position >= m_size || position < 0)
+		throw StringException("Error. Invalid input. This position is not in the string.");
 
-		return m_string[position];
-	}
-	catch (int)
-	{
-
-	}
+	return m_string[position];
 }
 
 char& String::Front()
@@ -93,33 +87,26 @@ void String::Clear()
 
 void String::Insert(char symbol, int position)
 {
-	try
-	{
-		if (position > m_size || position < 0)
-			throw 1;
+	if (position > m_size || position < 0)
+		throw StringException("Error. Invalid input. This position is not in the string.");
 
-		char* copy = new char[m_size];
-		for (int i = 0; i < m_size; i++)
-			copy[i] = m_string[i];
+	char* copy = new char[m_size];
+	for (int i = 0; i < m_size; i++)
+		copy[i] = m_string[i];
 
-		delete[]m_string;
-		m_size++;
-		m_string = new char[m_size];
+	delete[]m_string;
+	m_size++;
+	m_string = new char[m_size];
 
-		for (int i = 0; i < position; i++)
-			m_string[i] = copy[i];
+	for (int i = 0; i < position; i++)
+		m_string[i] = copy[i];
 
-		m_string[position] = symbol;
+	m_string[position] = symbol;
 
-		for (int i = position + 1; i < m_size; i++)
-			m_string[i] = copy[i - 1];
+	for (int i = position + 1; i < m_size; i++)
+		m_string[i] = copy[i - 1];
 
-		delete[]copy;
-	}
-	catch (int)
-	{
-
-	}
+	delete[]copy;
 }
 
 void String::Erase(int begin, int end)
@@ -259,54 +246,41 @@ void String::Copy(const String& obj)
 
 bool String::Find(const String& obj, int position)
 {
-	try
+	if (position > m_size || position < 0)
+		throw StringException("Error. Invalid input. This position is not in the string.");
+
+	int count = 0;
+
+	for (int i = position; i < m_size; i++)
 	{
-		if (position > m_size || position < 0)
-			throw 1;
-
-		int count = 0;
-
-		for (int i = position; i < m_size; i++)
-		{
-			if (m_string[i] == obj.m_string[i])
-				count++;
-			else
-				count = 0;
-			if (count == obj.m_size)
-				return true;
-		}
-		return false;
+		if (m_string[i] == obj.m_string[i])
+			count++;
+		else
+			count = 0;
+		if (count == obj.m_size)
+			return true;
 	}
-	catch (int)
-	{
+	return false;
 
-	}
 }
 
 String String::SubStr(int position, int amount)
 {
-	try
-	{
-		if (position > m_size || position < 0)
-			throw 1;
+	if (position > m_size || position < 0)
+		throw StringException("Error. Invalid input. This position is not in the string.");
 
-		int end = position + amount;
-		if (end > m_size)
-			end = m_size;
+	int end = position + amount;
+	if (end > m_size)
+		end = m_size;
 
-		String answer;
+	String answer;
 
-		answer.Resize(end - position, ' ');
+	answer.Resize(end - position, ' ');
 
-		for (int i = position; i < end; i++)
-			answer[i-position] = m_string[i];
+	for (int i = position; i < end; i++)
+		answer[i-position] = m_string[i];
 
-		return answer;
-	}
-	catch (int)
-	{
-
-	}
+	return answer;
 }
 
 bool String::Compare(const String& obj)
@@ -341,7 +315,7 @@ std::istream& operator>>(std::istream& in, String& obj)
 			if (in.fail())
 			{
 				delete[]string_;
-				throw 1;
+				throw StringException("Error. Invalid character supplied.");
 			}
 
 			string_[count] = symbol;
@@ -372,9 +346,9 @@ std::istream& operator>>(std::istream& in, String& obj)
 			}
 		}
 	}
-	catch (int)
+	catch (StringException& exception_)
 	{
-		std::cout << "Error. Invalid character supplied." << std::endl;
+		std::cerr << "An exception occurred at string (" << exception_.GetError() << ")" << std::endl;
 		in.setstate(std::ios::failbit);
 		return in;
 	}
@@ -515,15 +489,8 @@ bool String::operator>=(const String& obj)
 
 char& String::operator[](int index)
 {
-	try
-	{
-		if (index >= m_size || index < 0)
-			throw 1;
+	if (index >= m_size || index < 0)
+		throw StringException("Error. Invalid input. This position is not in the string.");
 
-		return m_string[index];
-	}
-	catch (int)
-	{
-
-	}
+	return m_string[index];
 }

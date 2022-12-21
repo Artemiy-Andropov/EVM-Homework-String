@@ -20,7 +20,7 @@ public:
 	*@param Строка
 	*@param Натуральное число (Размер)
 	*/
-	String(char* string_, int size);
+	String(const char* string_, int size);
 
 	/*
 	*@brief Конструктор копирования
