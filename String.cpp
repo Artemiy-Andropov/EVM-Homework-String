@@ -64,7 +64,7 @@ int String::Lenght()
 char& String::At(int position)
 {
 	if (position >= m_size || position < 0)
-		throw StringException("Error. Invalid input. This position is not in the string.");
+		throw StringException("Error in function At. Invalid input. This position is not in the string.", 1);
 
 	return m_string[position];
 }
@@ -88,7 +88,7 @@ void String::Clear()
 void String::Insert(char symbol, int position)
 {
 	if (position > m_size || position < 0)
-		throw StringException("Error. Invalid input. This position is not in the string.");
+		throw StringException("Error in function Insert. Invalid input. This position is not in the string.", 1);
 
 	char* copy = new char[m_size];
 	for (int i = 0; i < m_size; i++)
@@ -247,7 +247,7 @@ void String::Copy(const String& obj)
 bool String::Find(const String& obj, int position)
 {
 	if (position > m_size || position < 0)
-		throw StringException("Error. Invalid input. This position is not in the string.");
+		throw StringException("Error in function Find. Invalid input. This position is not in the string.", 1);
 
 	int count = 0;
 
@@ -267,7 +267,7 @@ bool String::Find(const String& obj, int position)
 String String::SubStr(int position, int amount)
 {
 	if (position > m_size || position < 0)
-		throw StringException("Error. Invalid input. This position is not in the string.");
+		throw StringException("Error in function SubStr. Invalid input. This position is not in the string.", 1);
 
 	int end = position + amount;
 	if (end > m_size)
@@ -297,60 +297,51 @@ std::ostream& operator<<(std::ostream& out, const String& obj)
 
 std::istream& operator>>(std::istream& in, String& obj)
 {
-	try
+	int count = 0;
+	int size_ = 100;
+	char* string_ = new char[size_];
+	char symbol;
+	while (1)
 	{
-		int count = 0;
-		int size_ = 100;
-		char* string_ = new char[size_];
-		char symbol;
-		while (1)
+		if (in.peek() == 32)
 		{
-			if (in.peek() == 32)
-			{
-				string_[count] = ' ';
-				count++;
-			}
-
-			in >> symbol;
-			if (in.fail())
-			{
-				delete[]string_;
-				throw StringException("Error. Invalid character supplied.");
-			}
-
-			string_[count] = symbol;
+			string_[count] = ' ';
 			count++;
-			if (count == size_)
-			{
-				size_ = size_ * 2;
-				char* copy = new char[count];
-
-				for (int i = 0; i < count; i++)
-					copy[i] = string_[i];
-
-				delete[]string_;
-				string_ = new char[size_];
-
-				for (int i = 0; i < count; i++)
-					string_[i] = copy[i];
-				delete[]copy;
-			}
-			if (in.peek() == '\n')
-			{
-				obj.m_size = count;
-				obj.m_string = new char[count];
-				for (int i = 0; i < count; i++)
-					obj.m_string[i] = string_[i];
-				delete[]string_;
-				return in;
-			}
 		}
-	}
-	catch (StringException& exception_)
-	{
-		std::cerr << "An exception occurred at string (" << exception_.GetError() << ")" << std::endl;
-		in.setstate(std::ios::failbit);
-		return in;
+
+		in >> symbol;
+		if (in.fail())
+		{
+			delete[]string_;
+			throw StringException("Error in >>. Invalid character supplied.", 2);
+		}
+
+		string_[count] = symbol;
+		count++;
+		if (count == size_)
+		{
+			size_ = size_ * 2;
+			char* copy = new char[count];
+
+			for (int i = 0; i < count; i++)
+				copy[i] = string_[i];
+
+			delete[]string_;
+			string_ = new char[size_];
+
+			for (int i = 0; i < count; i++)
+				string_[i] = copy[i];
+			delete[]copy;
+		}
+		if (in.peek() == '\n')
+		{
+			obj.m_size = count;
+			obj.m_string = new char[count];
+			for (int i = 0; i < count; i++)
+				obj.m_string[i] = string_[i];
+			delete[]string_;
+			return in;
+		}
 	}
 }
 
@@ -490,7 +481,7 @@ bool String::operator>=(const String& obj)
 char& String::operator[](int index)
 {
 	if (index >= m_size || index < 0)
-		throw StringException("Error. Invalid input. This position is not in the string.");
+		throw StringException("Error in []. Invalid input. This position is not in the string.", 1);
 
 	return m_string[index];
 }

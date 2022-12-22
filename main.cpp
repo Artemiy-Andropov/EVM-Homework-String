@@ -71,7 +71,7 @@ int main()
 	}
 	catch (StringException& exception_)
 	{
-		std::cerr << "An exception occurred at string (" << exception_.GetError() << ")" << std::endl;
+		std::cerr << "An exception occurred at string (" << exception_.GetError() << ")" << "Error code: " << exception_.GetCodeError() << std::endl;
 	}
 	return 0;
 }

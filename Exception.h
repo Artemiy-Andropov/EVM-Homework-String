@@ -5,10 +5,13 @@
 class StringException
 {
 	String m_error;
+	int code_error;
 
 public:
 
-	StringException(const char* error_);
+	StringException(const char* error_, int code_error_);
 
 	const String GetError();
+
+	const int GetCodeError();
 };
